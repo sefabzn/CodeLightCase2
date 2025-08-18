@@ -1,0 +1,12 @@
+{
+  "user_id": 1,
+  "address_id": "A1001",
+  "household": [
+    {
+      "line_id": "LINE001",
+      "expected_gb": 8.0,
+      "expected_min": 450.0,
+      "tv_hd_hours": 25.0
+    }
+  ]
+}

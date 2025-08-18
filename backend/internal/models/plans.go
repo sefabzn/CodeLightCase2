@@ -49,3 +49,11 @@ type InstallSlot struct {
 	Tech      string    `json:"tech" db:"tech"` // fiber, vdsl, fwa
 	Available bool      `json:"available" db:"available"`
 }
+
+// Catalog represents all available plans and rules
+type Catalog struct {
+	MobilePlans   []MobilePlan   `json:"mobile_plans"`
+	HomePlans     []HomePlan     `json:"home_plans"`
+	TVPlans       []TVPlan       `json:"tv_plans"`
+	BundlingRules []BundlingRule `json:"bundling_rules"`
+}

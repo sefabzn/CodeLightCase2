@@ -13,16 +13,21 @@ import (
 
 // RecommendationService handles recommendation calculations
 type RecommendationService struct {
-	db              *db.DB
+	db              db.DatabaseInterface
 	coverageService *CoverageService
 }
 
 // NewRecommendationService creates a new recommendation service
-func NewRecommendationService(database *db.DB, coverageService *CoverageService) *RecommendationService {
+func NewRecommendationService(database db.DatabaseInterface, coverageService *CoverageService) *RecommendationService {
 	return &RecommendationService{
 		db:              database,
 		coverageService: coverageService,
 	}
+}
+
+// GetDB returns the database instance (for handler access)
+func (s *RecommendationService) GetDB() db.DatabaseInterface {
+	return s.db
 }
 
 // ComputeHomeMbps calculates the required home internet speed in Mbps

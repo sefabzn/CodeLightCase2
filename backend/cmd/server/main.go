@@ -10,41 +10,36 @@ import (
 	"time"
 
 	"app/internal/db"
+	"app/internal/handlers"
 	"app/internal/utils"
 
+	"github.com/joho/godotenv"
 	"github.com/labstack/echo/v4"
-	"github.com/labstack/echo/v4/middleware"
 )
 
 func main() {
+	// Load .env file if it exists
+	if err := godotenv.Load(); err != nil {
+		log.Printf("Warning: No .env file found or error loading .env file: %v", err)
+		log.Printf("Will use system environment variables instead")
+	} else {
+		log.Println("Successfully loaded .env file")
+	}
+
 	// Load configuration
 	config, err := utils.LoadConfig()
 	if err != nil {
 		log.Fatalf("Failed to load configuration: %v", err)
 	}
 
-	// Initialize database connection
-	database, err := db.New(config.DatabaseURL)
-	if err != nil {
-		log.Fatalf("Failed to connect to database: %v", err)
-	}
+	// Initialize Supabase client
+	database := db.NewSupabaseClient(config.SupabaseURL, config.SupabaseAnonKey, config.SupabaseServiceKey)
 
 	// Create Echo instance
 	e := echo.New()
 
-	// Middleware
-	e.Use(middleware.Logger())
-	e.Use(middleware.Recover())
-
-	// CORS middleware for frontend origin
-	e.Use(middleware.CORSWithConfig(middleware.CORSConfig{
-		AllowOrigins: []string{"http://localhost:3000"},
-		AllowMethods: []string{http.MethodGet, http.MethodPost, http.MethodPut, http.MethodDelete},
-		AllowHeaders: []string{echo.HeaderOrigin, echo.HeaderContentType, echo.HeaderAccept},
-	}))
-
-	// Routes
-	e.GET("/health", healthHandler(database))
+	// Setup all routes and middleware
+	handlers.SetupRoutes(e, database)
 
 	// Setup graceful shutdown
 	go func() {
@@ -70,24 +65,4 @@ func main() {
 	// Close database connection
 	database.Close()
 	log.Println("Server exited")
-}
-
-func healthHandler(database *db.DB) echo.HandlerFunc {
-	return func(c echo.Context) error {
-		ctx, cancel := context.WithTimeout(c.Request().Context(), 2*time.Second)
-		defer cancel()
-
-		// Check database health
-		if err := database.Health(ctx); err != nil {
-			return c.JSON(http.StatusServiceUnavailable, map[string]string{
-				"status": "error",
-				"error":  "database unhealthy",
-			})
-		}
-
-		return c.JSON(http.StatusOK, map[string]string{
-			"status":   "ok",
-			"database": "connected",
-		})
-	}
 }

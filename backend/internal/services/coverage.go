@@ -9,11 +9,11 @@ import (
 
 // CoverageService handles coverage-related operations
 type CoverageService struct {
-	db *db.DB
+	db db.DatabaseInterface
 }
 
 // NewCoverageService creates a new coverage service
-func NewCoverageService(database *db.DB) *CoverageService {
+func NewCoverageService(database db.DatabaseInterface) *CoverageService {
 	return &CoverageService{
 		db: database,
 	}

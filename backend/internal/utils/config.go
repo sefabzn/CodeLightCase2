@@ -37,9 +37,6 @@ func LoadConfig() (*Config, error) {
 func (c *Config) validate() error {
 	var missingVars []string
 
-	if c.DatabaseURL == "" {
-		missingVars = append(missingVars, "DATABASE_URL")
-	}
 	if c.SupabaseURL == "" {
 		missingVars = append(missingVars, "SUPABASE_URL")
 	}
