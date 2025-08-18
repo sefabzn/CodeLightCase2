@@ -1,29 +1,36 @@
 package main
 
 import (
-	"encoding/json"
-	"fmt"
-	"log"
 	"net/http"
+
+	"github.com/labstack/echo/v4"
+	"github.com/labstack/echo/v4/middleware"
 )
 
 func main() {
-	// Health check endpoint
-	http.HandleFunc("/health", healthHandler)
+	// Create Echo instance
+	e := echo.New()
+
+	// Middleware
+	e.Use(middleware.Logger())
+	e.Use(middleware.Recover())
+
+	// CORS middleware for frontend origin
+	e.Use(middleware.CORSWithConfig(middleware.CORSConfig{
+		AllowOrigins: []string{"http://localhost:3000"},
+		AllowMethods: []string{http.MethodGet, http.MethodPost, http.MethodPut, http.MethodDelete},
+		AllowHeaders: []string{echo.HeaderOrigin, echo.HeaderContentType, echo.HeaderAccept},
+	}))
+
+	// Routes
+	e.GET("/health", healthHandler)
 
 	// Start server
-	port := ":8000"
-	fmt.Printf("Server starting on %s\n", port)
-	log.Fatal(http.ListenAndServe(port, nil))
+	e.Logger.Fatal(e.Start(":8000"))
 }
 
-func healthHandler(w http.ResponseWriter, r *http.Request) {
-	w.Header().Set("Content-Type", "application/json")
-	w.WriteHeader(http.StatusOK)
-
-	response := map[string]string{
+func healthHandler(c echo.Context) error {
+	return c.JSON(http.StatusOK, map[string]string{
 		"status": "ok",
-	}
-
-	json.NewEncoder(w).Encode(response)
+	})
 }
