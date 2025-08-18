@@ -1,9 +1,15 @@
 package main
 
 import (
+	"context"
 	"log"
 	"net/http"
+	"os"
+	"os/signal"
+	"syscall"
+	"time"
 
+	"app/internal/db"
 	"app/internal/utils"
 
 	"github.com/labstack/echo/v4"
@@ -15,6 +21,12 @@ func main() {
 	config, err := utils.LoadConfig()
 	if err != nil {
 		log.Fatalf("Failed to load configuration: %v", err)
+	}
+
+	// Initialize database connection
+	database, err := db.New(config.DatabaseURL)
+	if err != nil {
+		log.Fatalf("Failed to connect to database: %v", err)
 	}
 
 	// Create Echo instance
@@ -32,14 +44,50 @@ func main() {
 	}))
 
 	// Routes
-	e.GET("/health", healthHandler)
+	e.GET("/health", healthHandler(database))
 
-	// Start server
-	e.Logger.Fatal(e.Start(config.GetAddr()))
+	// Setup graceful shutdown
+	go func() {
+		if err := e.Start(config.GetAddr()); err != nil && err != http.ErrServerClosed {
+			e.Logger.Fatal("Server startup failed: ", err)
+		}
+	}()
+
+	// Wait for interrupt signal to gracefully shutdown
+	quit := make(chan os.Signal, 1)
+	signal.Notify(quit, os.Interrupt, syscall.SIGTERM)
+	<-quit
+	log.Println("Shutting down server...")
+
+	// Gracefully shutdown with timeout
+	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+	defer cancel()
+
+	if err := e.Shutdown(ctx); err != nil {
+		log.Printf("Server forced to shutdown: %v", err)
+	}
+
+	// Close database connection
+	database.Close()
+	log.Println("Server exited")
 }
 
-func healthHandler(c echo.Context) error {
-	return c.JSON(http.StatusOK, map[string]string{
-		"status": "ok",
-	})
+func healthHandler(database *db.DB) echo.HandlerFunc {
+	return func(c echo.Context) error {
+		ctx, cancel := context.WithTimeout(c.Request().Context(), 2*time.Second)
+		defer cancel()
+
+		// Check database health
+		if err := database.Health(ctx); err != nil {
+			return c.JSON(http.StatusServiceUnavailable, map[string]string{
+				"status": "error",
+				"error":  "database unhealthy",
+			})
+		}
+
+		return c.JSON(http.StatusOK, map[string]string{
+			"status":   "ok",
+			"database": "connected",
+		})
+	}
 }
