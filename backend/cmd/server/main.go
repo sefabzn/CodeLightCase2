@@ -1,13 +1,22 @@
 package main
 
 import (
+	"log"
 	"net/http"
+
+	"app/internal/utils"
 
 	"github.com/labstack/echo/v4"
 	"github.com/labstack/echo/v4/middleware"
 )
 
 func main() {
+	// Load configuration
+	config, err := utils.LoadConfig()
+	if err != nil {
+		log.Fatalf("Failed to load configuration: %v", err)
+	}
+
 	// Create Echo instance
 	e := echo.New()
 
@@ -26,7 +35,7 @@ func main() {
 	e.GET("/health", healthHandler)
 
 	// Start server
-	e.Logger.Fatal(e.Start(":8000"))
+	e.Logger.Fatal(e.Start(config.GetAddr()))
 }
 
 func healthHandler(c echo.Context) error {
