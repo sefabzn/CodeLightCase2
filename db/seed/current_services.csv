@@ -1,0 +1,6 @@
+id,user_id,has_home,home_tech,home_speed,has_tv,mobile_plan_ids
+1,1,true,vdsl,25,false,"[1,2]"
+2,2,true,fwa,30,false,"[3]"
+3,3,false,,,false,"[2]"
+4,4,false,,,true,"[1,1,1]"
+5,5,true,fiber,100,true,"[4,3]"

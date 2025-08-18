@@ -1,0 +1,6 @@
+plan_id,plan_name,quota_gb,quota_min,monthly_price,overage_gb,overage_min
+1,Basic 5GB,5.00,300.00,99.90,5.00,0.50
+2,Standard 10GB,10.00,500.00,149.90,4.00,0.50
+3,Premium 20GB,20.00,1000.00,199.90,3.50,0.40
+4,Unlimited 50GB,50.00,2000.00,299.90,2.00,0.30
+5,Family 75GB,75.00,3000.00,399.90,1.50,0.25

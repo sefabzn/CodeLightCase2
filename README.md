@@ -14,8 +14,7 @@ Web application that helps users find the most cost-effective combination of mob
 
 - Node.js 18+ with pnpm
 - Go 1.21+
-- Docker Desktop (for Supabase local development)
-- Supabase CLI (installed via npx)
+- Supabase CLI
 
 ### Quick Start
 
@@ -27,9 +26,7 @@ cd CodeLightCase2
 
 2. **Setup database**:
 ```bash
-# Start Docker Desktop first, then:
-cd db
-npx supabase start
+make db-up
 ```
 
 3. **Start development servers**:
@@ -49,6 +46,7 @@ make web
 
 Individual services:
 
+**Unix/Linux/macOS (using Makefile):**
 ```bash
 # Database
 make db-up      # Start Supabase
@@ -62,8 +60,23 @@ make api        # Start Go server on :8000
 make web        # Start Next.js on :3000
 ```
 
+**Windows (using PowerShell script):**
+```powershell
+# Database
+.\dev.ps1 db-up      # Start Supabase
+.\dev.ps1 db-down    # Stop Supabase
+.\dev.ps1 seed       # Load sample data
+
+# Backend
+.\dev.ps1 api        # Start Go server on :8000
+
+# Frontend
+.\dev.ps1 web        # Start Next.js on :3000
+```
+
 ## Test
 
+**Unix/Linux/macOS:**
 ```bash
 # Backend tests
 make test-api
@@ -73,6 +86,18 @@ make test-web
 
 # All tests
 make test
+```
+
+**Windows:**
+```powershell
+# Backend tests
+.\dev.ps1 test-api
+
+# Frontend tests
+.\dev.ps1 test-web
+
+# All tests
+.\dev.ps1 test
 ```
 
 ## Project Structure
