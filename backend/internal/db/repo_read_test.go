@@ -52,7 +52,7 @@ func NewMockDB() *MockDB {
 		installSlots: map[string][]models.InstallSlot{
 			"A1001-fiber": {
 				{
-					SlotID:    1,
+					SlotID:    "S1",
 					AddressID: "A1001",
 					SlotStart: time.Now().Add(24 * time.Hour),
 					SlotEnd:   time.Now().Add(27 * time.Hour),

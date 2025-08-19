@@ -1,5 +1,4 @@
 tv_id,name,hd_hours_included,monthly_price
-1,Basic TV,30.00,39.90
-2,Standard TV,60.00,59.90
-3,Premium TV,120.00,89.90
-4,Sports Package,150.00,119.90
+301,TV Plus Temel,20,69
+302,TV Plus Aile,60,109
+303,TV Plus Sinema+,120,149

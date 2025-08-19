@@ -72,7 +72,7 @@ func TestValidator(t *testing.T) {
 			name: "Valid checkout request",
 			input: api.CheckoutRequest{
 				UserID:    1,
-				SlotID:    123,
+				SlotID:    "S123",
 				AddressID: "A1001",
 				SelectedCombo: api.RecommendationCandidateDTO{
 					ComboLabel:   "Triple Bundle",

@@ -1,9 +1,4 @@
 address_id,city,district,fiber,vdsl,fwa
-A1001,Istanbul,Kadikoy,true,true,false
-A1002,Istanbul,Besiktas,false,true,true
-A1003,Ankara,Cankaya,true,true,false
-A1004,Izmir,Konak,false,false,true
-A1005,Istanbul,Sisli,true,true,true
-A1006,Ankara,Kecioren,false,true,false
-A1007,Izmir,Bornova,true,false,false
-A1008,Istanbul,Bakirkoy,true,true,false
+A1001,Istanbul,Kadikoy,1,1,1
+A1002,Ankara,Cankaya,0,1,1
+A1003,Izmir,Bornova,1,0,1

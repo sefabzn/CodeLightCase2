@@ -1,5 +1,5 @@
 rule_id,rule_type,description,discount_percent,applies_to
-1,line_discount,2nd line 5% discount,5.00,mobile
-2,line_discount,3+ lines 10% discount,10.00,mobile
-3,bundle_discount,Mobile + Home bundle discount,10.00,total
-4,bundle_discount,Mobile + Home + TV triple bundle,15.00,total
+401,bundle,Mobil+Ev,10,all
+402,bundle,Mobil+Ev+TV,15,all
+403,extra_line,2. Hat -%5 (mobil bileşen),5,mobile
+404,extra_line,3+ Hat -%10 (mobil bileşen),10,mobile

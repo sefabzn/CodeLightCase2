@@ -42,7 +42,7 @@ type BundlingRule struct {
 
 // InstallSlot represents an installation time slot
 type InstallSlot struct {
-	SlotID    int       `json:"slot_id" db:"slot_id"`
+	SlotID    string    `json:"slot_id" db:"slot_id"`
 	AddressID string    `json:"address_id" db:"address_id"`
 	SlotStart time.Time `json:"slot_start" db:"slot_start"`
 	SlotEnd   time.Time `json:"slot_end" db:"slot_end"`

@@ -1,8 +1,5 @@
 home_id,name,tech,down_mbps,monthly_price,install_fee
-1,Fiber 50Mbps,fiber,50,89.90,0.00
-2,Fiber 100Mbps,fiber,100,119.90,0.00
-3,Fiber 200Mbps,fiber,200,159.90,0.00
-4,VDSL 25Mbps,vdsl,25,69.90,50.00
-5,VDSL 50Mbps,vdsl,50,89.90,50.00
-6,FWA 30Mbps,fwa,30,79.90,100.00
-7,FWA 50Mbps,fwa,50,99.90,100.00
+201,Fiber 100,fiber,100,399,0
+202,Fiber 200,fiber,200,499,0
+203,VDSL 35,vdsl,35,329,0
+204,FWA 30,fwa,30,349,0

@@ -1,6 +1,2 @@
 user_id,name,address_id,current_bundle_label
-1,Ahmet Yilmaz,A1001,Basic Mobile + VDSL
-2,Fatma Demir,A1002,Premium Mobile + FWA
-3,Mehmet Ozkan,A1003,Standard Mobile Only
-4,Ayse Kaya,A1004,Family Mobile + TV
-5,Can Celik,A1005,Premium Triple Bundle
+1001,Ahmet Yılmaz,A1001,"Mobil(101,102)+Ev100"

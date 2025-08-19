@@ -85,7 +85,7 @@ type TVPlanDTO struct {
 type CheckoutRequest struct {
 	UserID        int                        `json:"user_id" validate:"required"`
 	SelectedCombo RecommendationCandidateDTO `json:"selected_combo" validate:"required"`
-	SlotID        int                        `json:"slot_id" validate:"required"`
+	SlotID        string                     `json:"slot_id" validate:"required"`
 	AddressID     string                     `json:"address_id" validate:"required"`
 }
 
