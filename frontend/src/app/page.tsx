@@ -1,141 +1,161 @@
 'use client';
 
-import { useState, useEffect } from 'react';
-import { apiClient, ApiError } from '@/lib/api-client';
-import type { HealthResponse, CoverageInfo } from '@/types/api';
+import { useState } from 'react';
+import { useRouter } from 'next/navigation';
+import { useWizard } from '@/context/WizardContext';
+import { HouseholdForm } from '@/components/HouseholdForm';
+import { AddressForm } from '@/components/AddressForm';
 
 export default function Home() {
-  const [healthStatus, setHealthStatus] = useState<HealthResponse | null>(null);
-  const [coverage, setCoverage] = useState<CoverageInfo | null>(null);
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
+  const router = useRouter();
+  const { state } = useWizard();
+  const [isHouseholdValid, setIsHouseholdValid] = useState(false);
+  const [isAddressValid, setIsAddressValid] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
-  const testAPI = async () => {
-    setLoading(true);
-    setError(null);
+  const canContinue = isHouseholdValid && isAddressValid && state.household.length > 0 && state.addressId;
+
+  const handleContinue = async () => {
+    if (!canContinue) return;
+
+    setIsSubmitting(true);
     
     try {
-      // Test health endpoint
-      const health = await apiClient.health();
-      setHealthStatus(health);
+      // Small delay to show loading state
+      await new Promise(resolve => setTimeout(resolve, 500));
       
-      // Test coverage endpoint with sample data
-      const coverageData = await apiClient.getCoverage('A1001');
-      setCoverage(coverageData);
-      
-    } catch (err) {
-      if (err instanceof ApiError) {
-        setError(`API Error: ${err.message} (${err.code})`);
-      } else {
-        setError(`Network Error: ${err instanceof Error ? err.message : 'Unknown error'}`);
-      }
+      // Navigate to recommendations page
+      router.push('/recommendations');
+    } catch (error) {
+      console.error('Navigation error:', error);
     } finally {
-      setLoading(false);
+      setIsSubmitting(false);
     }
   };
 
-  useEffect(() => {
-    testAPI();
-  }, []);
-
   return (
-    <div className="min-h-screen bg-gradient-to-br from-red-50 to-gray-100 p-8">
-      <div className="max-w-4xl mx-auto">
-        <header className="text-center mb-12">
-          <h1 className="text-4xl font-bold text-gray-900 mb-4">
-            🚀 Turkcell Recommendation System
-          </h1>
-          <p className="text-lg text-gray-600">
-            AI-powered telecom package recommendations
-          </p>
-        </header>
+    <div className="min-h-screen bg-gray-50">
+      {/* Header */}
+      <div className="bg-white shadow-sm">
+        <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
+          <div className="text-center">
+            <h1 className="text-3xl font-bold text-gray-900">
+              Turkcell Package Recommendation
+            </h1>
+            <p className="mt-2 text-gray-600">
+              Find the perfect mobile, home internet, and TV package for your household
+            </p>
+          </div>
+          
+          {/* Progress indicator */}
+          <div className="mt-8">
+            <nav aria-label="Progress">
+              <ol className="flex items-center justify-center space-x-5">
+                <li className="flex items-center">
+                  <div className="flex items-center text-blue-600">
+                    <span className="flex h-10 w-10 items-center justify-center rounded-full border-2 border-blue-600 bg-blue-600 text-white">
+                      1
+                    </span>
+                    <span className="ml-4 text-sm font-medium">Setup</span>
+                  </div>
+                </li>
+                <li className="flex items-center">
+                  <div className="flex items-center text-gray-500">
+                    <span className="flex h-10 w-10 items-center justify-center rounded-full border-2 border-gray-300">
+                      2
+                    </span>
+                    <span className="ml-4 text-sm font-medium">Recommendations</span>
+                  </div>
+                </li>
+                <li className="flex items-center">
+                  <div className="flex items-center text-gray-500">
+                    <span className="flex h-10 w-10 items-center justify-center rounded-full border-2 border-gray-300">
+                      3
+                    </span>
+                    <span className="ml-4 text-sm font-medium">Checkout</span>
+                  </div>
+                </li>
+              </ol>
+            </nav>
+          </div>
+        </div>
+      </div>
 
-        <div className="grid md:grid-cols-2 gap-8">
-          {/* API Health Status */}
-          <div className="bg-white rounded-lg shadow-md p-6">
-            <h2 className="text-xl font-semibold mb-4 text-gray-800">
-              🔗 API Connection Status
-            </h2>
-            
-            {loading && (
-              <div className="flex items-center space-x-2">
-                <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-red-600"></div>
-                <span>Testing API connection...</span>
-              </div>
-            )}
-            
-            {error && (
-              <div className="bg-red-50 border border-red-200 rounded-md p-4">
-                <p className="text-red-800">❌ {error}</p>
-                <button 
-                  onClick={testAPI}
-                  className="mt-2 px-4 py-2 bg-red-600 text-white rounded hover:bg-red-700"
-                >
-                  Retry
-                </button>
-              </div>
-            )}
-            
-            {healthStatus && !loading && (
-              <div className="bg-green-50 border border-green-200 rounded-md p-4">
-                <p className="text-green-800 font-medium">✅ API Connected!</p>
-                <div className="mt-2 text-sm text-gray-600">
-                  <p>Status: {healthStatus.status}</p>
-                  <p>Database: {healthStatus.database}</p>
-                  <p>Service: {healthStatus.service}</p>
-                  <p>Version: {healthStatus.version}</p>
-                </div>
-              </div>
-            )}
+      {/* Main content */}
+      <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        <div className="space-y-8">
+          {/* Household Form */}
+          <div className="bg-white rounded-lg shadow-sm p-6">
+            <HouseholdForm onValidationChange={setIsHouseholdValid} />
           </div>
 
-          {/* Sample Data */}
-          <div className="bg-white rounded-lg shadow-md p-6">
-            <h2 className="text-xl font-semibold mb-4 text-gray-800">
-              📍 Sample Coverage Data
-            </h2>
-            
-            {coverage && (
-              <div className="space-y-3">
-                <div>
-                  <p className="font-medium">Address: {coverage.address_id}</p>
-                  <p className="text-gray-600">{coverage.city}, {coverage.district}</p>
-                </div>
-                
-                <div>
-                  <p className="font-medium">Available Technologies:</p>
-                  <div className="flex space-x-2 mt-1">
-                    {coverage.available_tech.map((tech) => (
-                      <span 
-                        key={tech}
-                        className="px-2 py-1 bg-blue-100 text-blue-800 rounded text-sm"
-                      >
-                        {tech.toUpperCase()}
-                      </span>
-                    ))}
-                  </div>
-                </div>
-                
-                <div className="grid grid-cols-3 gap-2 text-sm">
-                  <div className={`p-2 rounded ${coverage.fiber ? 'bg-green-100 text-green-800' : 'bg-gray-100 text-gray-500'}`}>
-                    Fiber: {coverage.fiber ? '✅' : '❌'}
-                  </div>
-                  <div className={`p-2 rounded ${coverage.vdsl ? 'bg-green-100 text-green-800' : 'bg-gray-100 text-gray-500'}`}>
-                    VDSL: {coverage.vdsl ? '✅' : '❌'}
-                  </div>
-                  <div className={`p-2 rounded ${coverage.fwa ? 'bg-green-100 text-green-800' : 'bg-gray-100 text-gray-500'}`}>
-                    FWA: {coverage.fwa ? '✅' : '❌'}
-                  </div>
+          {/* Address Form */}
+          <div className="bg-white rounded-lg shadow-sm p-6">
+            <AddressForm onValidationChange={setIsAddressValid} />
+          </div>
+
+          {/* Continue Button */}
+          <div className="bg-white rounded-lg shadow-sm p-6">
+            <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between">
+              <div className="mb-4 sm:mb-0">
+                <h3 className="text-lg font-medium text-gray-900">Ready to continue?</h3>
+                <p className="text-sm text-gray-600">
+                  We'll analyze your needs and show you the best package recommendations.
+                </p>
+              </div>
+
+              <button
+                onClick={handleContinue}
+                disabled={!canContinue || isSubmitting}
+                className={`w-full sm:w-auto inline-flex items-center justify-center px-6 py-3 border border-transparent text-base font-medium rounded-md transition-colors ${
+                  canContinue
+                    ? 'text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500'
+                    : 'text-gray-400 bg-gray-100 cursor-not-allowed'
+                }`}
+              >
+                {isSubmitting ? (
+                  <>
+                    <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin mr-2"></div>
+                    Processing...
+                  </>
+                ) : (
+                  <>
+                    Continue to Recommendations
+                    <svg className="ml-2 w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                    </svg>
+                  </>
+                )}
+              </button>
+            </div>
+
+            {/* Validation summary */}
+            {(!isHouseholdValid || !isAddressValid) && (
+              <div className="mt-4 p-3 bg-yellow-50 border border-yellow-200 rounded-md">
+                <div className="text-sm text-yellow-700">
+                  <p className="font-medium mb-1">Please complete the following:</p>
+                  <ul className="list-disc list-inside space-y-1">
+                    {!isHouseholdValid && (
+                      <li>Fill in valid household information for all lines</li>
+                    )}
+                    {!isAddressValid && (
+                      <li>Provide a valid address with coverage information</li>
+                    )}
+                  </ul>
                 </div>
               </div>
             )}
           </div>
         </div>
+      </div>
 
-        <div className="text-center mt-12">
-          <p className="text-gray-600">
-            Frontend is connected to backend API running on <code className="bg-gray-200 px-2 py-1 rounded">localhost:8000</code>
-          </p>
+      {/* Footer */}
+      <div className="bg-white border-t mt-12">
+        <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
+          <div className="text-center text-sm text-gray-500">
+            <p>© 2024 Turkcell Package Recommendation System</p>
+            <p className="mt-1">Get personalized recommendations for mobile, home internet, and TV services</p>
+          </div>
         </div>
       </div>
     </div>
